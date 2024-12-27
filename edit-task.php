@@ -59,7 +59,7 @@ $row = $info->fetch(PDO::FETCH_ASSOC);
 			                    </div>
 			                  </div>
 			                  <div class="form-group">
-			                    <label class="control-label col-sm-5">Strat Time</label>
+			                    <label class="control-label col-sm-5">Start Time</label>
 			                    <div class="col-sm-7">
 			                      <input type="text" name="t_start_time" id="t_start_time"  class="form-control" value="<?php echo $row['t_start_time']; ?>">
 			                    </div>

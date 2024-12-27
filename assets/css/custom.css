@@ -2,7 +2,7 @@
 body,html{
 	height: 100%;
 	font-size: 17px;
-	background: #105469;
+	background: rgb(107, 238, 168);
 	  font-family: 'Open Sans', sans-serif;
 }
 
@@ -66,7 +66,7 @@ nav.sidebar, .main{
 
 	/*adds border top to first nav box */
 	nav.sidebar .navbar-nav > li:first-child{
-		border-top: 1px #968a00 solid;
+		border-top: 1px rgb(107, 238, 168) solid;
 	}
 
 	/*adds border to bottom nav boxes*/
