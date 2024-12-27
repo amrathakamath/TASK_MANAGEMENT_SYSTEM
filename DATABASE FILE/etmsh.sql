@@ -175,3 +175,7 @@ INSERT INTO attendance_info (atn_user_id, in_time, out_time, total_duration)
 VALUES (1, '2023-01-01 09:00:00', '2023-01-01 17:00:00', '8:00:00');
 INSERT INTO attendance_info (atn_user_id, in_time, out_time, total_duration) 
 VALUES (1, '2024-12-27 09:00:00', '2024-12-27 17:00:00', '8:00:00');
+
+-- Ensure that the start time of a task is before the end time
+ALTER TABLE task_info
+ADD CONSTRAINT chk_task_time CHECK (t_start_time < t_end_time);
