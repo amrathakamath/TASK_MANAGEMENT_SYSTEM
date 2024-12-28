@@ -38,7 +38,8 @@ if (isset($_POST['create_task'])) {
     $sql = "INSERT INTO task_info (t_title, t_description, t_start_time, t_end_time, deadline, t_user_id) VALUES (:title, :description, :start_time, :end_time, :deadline, :user_id)";
     // Prepare and execute the statement...
 }
-
+$deadline = new DateTime($task['deadline']);
+    $current_time = new DateTime();
 if (isset($_POST['update_task_status'])) {
     $task_id = $_POST['task_id'];
     $new_status = $_POST['status'];
