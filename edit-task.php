@@ -55,6 +55,38 @@ $unix_current_time = $currentDateTime->getTimestamp();
 			<div class="well">
 			<h3 class="text-center bg-primary" style="padding: 7px;">Edit Task </h3><br>
 
+<<<<<<< HEAD
+=======
+
+                      <div class="row">
+                        <div class="col-md-12">
+                          <form class="form-horizontal" role="form" action="" method="post" autocomplete="off">
+                            <div class="form-group">
+			                    <label class="control-label col-sm-5">Task Title</label>
+			                    <div class="col-sm-7">
+			                      <input type="text" placeholder="Task Title" id="task_title" name="task_title" list="expense" class="form-control" value="<?php echo $row['t_title']; ?>" <?php if($user_role != 1){ ?> readonly <?php } ?> val required>
+			                    </div>
+			                  </div>
+			                  <div class="form-group">
+			                    <label class="control-label col-sm-5">Task Description</label>
+			                    <div class="col-sm-7">
+			                      <textarea name="task_description" id="task_description" placeholder="Text Deskcription" class="form-control" rows="5" cols="5"><?php echo $row['t_description']; ?></textarea>
+			                    </div>
+			                  </div>
+			                  <div class="form-group">
+			                    <label class="control-label col-sm-5">Start Time</label>
+			                    <div class="col-sm-7">
+			                      <input type="text" name="t_start_time" id="t_start_time"  class="form-control" value="<?php echo $row['t_start_time']; ?>">
+			                    </div>
+			                  </div>
+			                  <div class="form-group">
+			                    <label class="control-label col-sm-5">End Time</label>
+			                    <div class="col-sm-7">
+			                      <input type="text" name="t_end_time" id="t_end_time" class="form-control" value="<?php echo $row['t_end_time']; ?>">
+			                    </div>
+			                  </div>
+
+>>>>>>> e79aae9 (fixed)
 					<div class="row">
 					<div class="col-md-12">
 						<form class="form-horizontal" role="form" action="" method="post" autocomplete="off">
