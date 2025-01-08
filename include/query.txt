@@ -1,0 +1,410 @@
+Here are some viva questions and answers based on the **`attendance_info`** table details you shared:
+
+---
+
+### Table-Specific Questions
+
+1. **What is the purpose of the `attendance_info` table?**  
+   It tracks the attendance of employees or users by storing details such as attendance ID (`aten_id`), user ID (`atn_user_id`), check-in time (`in_time`), check-out time (`out_time`), and total duration (`total_duration`).
+
+2. **Why do some rows in the `attendance_info` table have `NULL` values for `out_time` and `total_duration`?**  
+   These values are `NULL` because the users have checked in but have not checked out yet, so the `total_duration` cannot be calculated.
+
+3. **How can you find the users who have not checked out yet?**  
+   ```sql
+   SELECT * FROM attendance_info WHERE out_time IS NULL;
+   ```
+
+4. **What query can calculate the total number of users who have checked out?**  
+   ```sql
+   SELECT COUNT(*) AS checked_out_users FROM attendance_info WHERE out_time IS NOT NULL;
+   ```
+
+5. **How is the `total_duration` calculated in your system?**  
+   The `total_duration` is the difference between `out_time` and `in_time`, which can be calculated using SQL. Example:  
+   ```sql
+   SELECT TIMEDIFF(out_time, in_time) AS total_duration FROM attendance_info;
+   ```
+
+---
+
+### Query and Data Handling
+
+6. **How would you update the `out_time` for a user with `aten_id = 38`?**  
+   ```sql
+   UPDATE attendance_info 
+   SET out_time = '2024-01-08 17:00:00', 
+       total_duration = TIMEDIFF('2024-01-08 17:00:00', in_time) 
+   WHERE aten_id = 38;
+   ```
+
+7. **What query can retrieve all attendance records for a specific user (e.g., `atn_user_id = 1`)?**  
+   ```sql
+   SELECT * FROM attendance_info WHERE atn_user_id = 1;
+   ```
+
+8. **How can you delete records where both `in_time` and `out_time` are `NULL`?**  
+   ```sql
+   DELETE FROM attendance_info WHERE in_time IS NULL AND out_time IS NULL;
+   ```
+
+---
+
+### Optimization and Design
+
+9. **What indexes would you apply to optimize queries on the `attendance_info` table?**  
+   - A primary key index on `aten_id` for faster lookups.  
+   - An index on `atn_user_id` to quickly retrieve attendance records for a specific user.
+
+10. **Why is it important to calculate `total_duration` at the time of check-out?**  
+    Calculating `total_duration` ensures accurate data entry and avoids recalculating durations every time the data is queried.
+
+---
+
+### Practical Scenarios
+
+11. **How would you identify users with attendance records spanning multiple days?**  
+    ```sql
+    SELECT * FROM attendance_info WHERE DATE(in_time) != DATE(out_time);
+    ```
+
+12. **What query would fetch the attendance details for users who checked out after `5 PM`?**  
+    ```sql
+    SELECT * FROM attendance_info WHERE TIME(out_time) > '17:00:00';
+    ```
+
+13. **What happens if a user forgets to check out? How would you handle this?**  
+    If a user forgets to check out, we can set a default `out_time` (e.g., end of the working day) and calculate `total_duration` based on that.  
+
+    ```sql
+    UPDATE attendance_info 
+    SET out_time = '2024-01-08 17:00:00', 
+        total_duration = TIMEDIFF('2024-01-08 17:00:00', in_time) 
+    WHERE out_time IS NULL;
+    ```
+
+---
+
+Here are some viva questions and answers tailored for the **`attendance_log`** table:
+
+---
+
+### Table-Specific Questions
+
+1. **What is the purpose of the `attendance_log` table?**  
+   It keeps a historical record of attendance changes, such as check-ins and check-outs, and logs when each entry was created.
+
+2. **What are the columns in the `attendance_log` table, and what do they represent?**  
+   - `log_id`: Primary key, unique identifier for each log entry.  
+   - `aten_id`: Foreign key, references the `attendance_info` table.  
+   - `atn_user_id`: The user ID associated with the attendance log.  
+   - `in_time`: The recorded check-in time.  
+   - `out_time`: The recorded check-out time (can be `NULL` if not available).  
+   - `created_at`: Timestamp indicating when the log entry was created.
+
+3. **Why does the `out_time` column have `NULL` values in some rows?**  
+   It indicates that the user has not checked out yet or the data for `out_time` was not recorded properly.
+
+---
+
+### Query-Related Questions
+
+4. **How would you retrieve all logs for a specific user (e.g., `atn_user_id = 1`)?**  
+   ```sql
+   SELECT * FROM attendance_log WHERE atn_user_id = 1;
+   ```
+
+5. **How can you identify logs with invalid `in_time` values (e.g., `0000-00-00 00:00:00`)?**  
+   ```sql
+   SELECT * FROM attendance_log WHERE in_time = '0000-00-00 00:00:00';
+   ```
+
+6. **What query would fetch logs created after a specific date, e.g., `2024-12-28`?**  
+   ```sql
+   SELECT * FROM attendance_log WHERE created_at > '2024-12-28';
+   ```
+
+---
+
+### Data Integrity and Design
+
+7. **How is the `attendance_log` table linked to the `attendance_info` table?**  
+   The `aten_id` column in the `attendance_log` table acts as a foreign key referencing the `aten_id` in the `attendance_info` table.
+
+8. **What constraints did you apply to maintain data integrity in this table?**  
+   - `log_id` is a primary key ensuring unique entries.  
+   - `aten_id` is a foreign key to maintain referential integrity with the `attendance_info` table.  
+
+9. **Why is the `created_at` column important?**  
+   It provides a timestamp of when each log entry was created, which is crucial for auditing and tracking historical changes.
+
+---
+
+### Practical Scenarios
+
+10. **How would you find all logs where `in_time` and `out_time` are both `NULL`?**  
+    ```sql
+    SELECT * FROM attendance_log WHERE in_time IS NULL AND out_time IS NULL;
+    ```
+
+11. **How can you fix rows with invalid `in_time` values (e.g., `0000-00-00 00:00:00`)?**  
+    ```sql
+    UPDATE attendance_log 
+    SET in_time = '2024-01-01 09:00:00' 
+    WHERE in_time = '0000-00-00 00:00:00';
+    ```
+
+12. **How would you delete logs created before a certain date (e.g., `2024-12-27`)?**  
+    ```sql
+    DELETE FROM attendance_log WHERE created_at < '2024-12-27';
+    ```
+
+---
+
+### Optimization and Enhancements
+
+13. **What index would you apply to improve performance for queries on this table?**  
+    - Index on `atn_user_id` for quick retrieval of logs for a specific user.  
+    - Index on `created_at` for filtering logs by date efficiently.
+
+14. **What enhancements can you suggest for the `attendance_log` table?**  
+    - Add a `status` column to indicate if the log entry is active or archived.  
+    - Include a `modified_at` column to track updates to log entries.  
+
+15. **How would you handle logging for bulk attendance updates?**  
+    Use batch insertion queries or triggers to insert multiple log entries efficiently.
+
+---
+
+Here are viva questions and answers based on the **`task_info`** table:
+
+---
+
+### Table-Specific Questions
+
+1. **What is the purpose of the `task_info` table?**  
+   The `task_info` table stores details about tasks assigned to users, including task title, description, start and end times, user ID, deadline, and status.
+
+2. **What are the key columns in the `task_info` table, and what do they represent?**  
+   - `task_id`: Primary key, unique identifier for each task.  
+   - `t_title`: Title of the task.  
+   - `t_description`: Description of the task.  
+   - `t_start_time`: Task start time.  
+   - `t_end_time`: Task end time.  
+   - `t_user_id`: The ID of the user assigned to the task.  
+   - `deadline`: The task deadline (currently `NULL` in the dataset).  
+   - `status`: Status of the task (`0` = Pending, `1` = In Progress, `2` = Completed).  
+
+3. **Why are some rows in the `deadline` column `NULL`?**  
+   The deadline field may not have been set or is optional for certain tasks.
+
+4. **What does the `status` column indicate?**  
+   The `status` column tracks the progress of a task.  
+   - `0` = Pending  
+   - `1` = In Progress  
+   - `2` = Completed  
+
+---
+
+### Query-Related Questions
+
+5. **How would you retrieve all tasks assigned to a specific user (e.g., `t_user_id = 18`)?**  
+   ```sql
+   SELECT * FROM task_info WHERE t_user_id = 18;
+   ```
+
+6. **How can you find tasks that are currently in progress?**  
+   ```sql
+   SELECT * FROM task_info WHERE status = 1;
+   ```
+
+7. **What query would fetch all tasks with end times past their deadlines?**  
+   ```sql
+   SELECT * FROM task_info 
+   WHERE t_end_time > deadline AND deadline IS NOT NULL;
+   ```
+
+8. **How can you update the status of a task to "Completed" (e.g., `task_id = 20`)?**  
+   ```sql
+   UPDATE task_info SET status = 2 WHERE task_id = 20;
+   ```
+
+9. **What query can delete tasks with missing titles or descriptions?**  
+   ```sql
+   DELETE FROM task_info WHERE t_title IS NULL OR t_description IS NULL;
+   ```
+
+---
+
+### Data Integrity and Optimization
+
+10. **What constraints are applied to the `task_info` table?**  
+    - `task_id` is the primary key, ensuring unique task entries.  
+    - `t_user_id` is likely a foreign key referencing a user table to maintain referential integrity.
+
+11. **What indexes would you use to optimize queries on this table?**  
+    - Index on `t_user_id` for faster retrieval of tasks assigned to a specific user.  
+    - Index on `status` for quick filtering of tasks by their progress state.
+
+12. **How can you ensure that `t_start_time` is always before `t_end_time`?**  
+    By using a constraint:  
+    ```sql
+    ALTER TABLE task_info ADD CONSTRAINT chk_time CHECK (t_start_time < t_end_time);
+    ```
+
+---
+
+### Practical Scenarios
+
+13. **How would you identify overdue tasks?**  
+    ```sql
+    SELECT * FROM task_info 
+    WHERE t_end_time < NOW() AND status != 2;
+    ```
+
+14. **How can you assign a new task to a user (e.g., `t_user_id = 22`)?**  
+    ```sql
+    INSERT INTO task_info (t_title, t_description, t_start_time, t_end_time, t_user_id, status) 
+    VALUES ('New Task', 'Description of the task', '2024-12-30 09:00:00', '2024-12-30 17:00:00', 22, 0);
+    ```
+
+15. **How would you find tasks scheduled for more than 3 hours?**  
+    ```sql
+    SELECT * FROM task_info 
+    WHERE TIMESTAMPDIFF(HOUR, t_start_time, t_end_time) > 3;
+    ```
+
+---
+
+### Enhancements
+
+16. **What improvements can you suggest for the `task_info` table?**  
+    - Add a `priority` column to categorize tasks (e.g., High, Medium, Low).  
+    - Include a `created_at` column to track when a task was created.  
+    - Implement triggers to automatically update the status to "Overdue" if the deadline has passed.
+
+17. **How can you ensure accurate task assignments to users?**  
+    By validating `t_user_id` against the user table using foreign key constraints and checking user availability before assigning tasks.
+
+---
+
+Here are viva questions and answers based on the **`tbl_admin`** table:
+
+---
+
+### Table-Specific Questions
+
+1. **What is the purpose of the `tbl_admin` table?**  
+   The `tbl_admin` table stores information about admins and users with administrative privileges, such as their full name, username, email, password, temporary password, and user role.
+
+2. **What are the key columns in the `tbl_admin` table, and what do they represent?**  
+   - `user_id`: Primary key, unique identifier for each admin/user.  
+   - `fullname`: Full name of the admin/user.  
+   - `username`: Unique username for login.  
+   - `email`: Admin/user's email address.  
+   - `password`: Encrypted password for secure login.  
+   - `temp_password`: Temporary password for password recovery/reset (optional).  
+   - `user_role`: Defines the role of the user (`1` = Super Admin, `2` = Admin/User).
+
+3. **Why is the `temp_password` column sometimes `NULL`?**  
+   It is `NULL` when the user has not set or used a temporary password for recovery.
+
+4. **What does the `user_role` column signify?**  
+   It indicates the level of access for a user. For example:  
+   - `1`: Super Admin (higher privileges).  
+   - `2`: Admin/User (limited privileges).
+
+---
+
+### Query-Related Questions
+
+5. **How would you retrieve all users with the role of `Admin`?**  
+   ```sql
+   SELECT * FROM tbl_admin WHERE user_role = 2;
+   ```
+
+6. **How can you find an admin by their email address (e.g., `amrathadkamath@gmail.com`)?**  
+   ```sql
+   SELECT * FROM tbl_admin WHERE email = 'amrathadkamath@gmail.com';
+   ```
+
+7. **What query would reset a user’s password by setting a temporary password?**  
+   ```sql
+   UPDATE tbl_admin 
+   SET temp_password = '123456' 
+   WHERE username = 'henry';
+   ```
+
+8. **How can you delete a user from the `tbl_admin` table (e.g., `user_id = 27`)?**  
+   ```sql
+   DELETE FROM tbl_admin WHERE user_id = 27;
+   ```
+
+---
+
+### Data Integrity and Security
+
+9. **How is the `password` column secured?**  
+   The `password` column stores encrypted or hashed passwords (e.g., MD5). This ensures passwords are not stored in plain text for security purposes.
+
+10. **What measures would you implement to prevent unauthorized access to the `tbl_admin` table?**  
+    - Use hashed passwords.  
+    - Role-based access control.  
+    - Implement SSL encryption for communication.  
+    - Restrict database access to authorized personnel only.
+
+11. **How can you validate that usernames are unique in the table?**  
+    By applying a `UNIQUE` constraint on the `username` column:  
+    ```sql
+    ALTER TABLE tbl_admin ADD CONSTRAINT unique_username UNIQUE (username);
+    ```
+
+---
+
+### Practical Scenarios
+
+12. **How would you find users who do not have a temporary password set?**  
+    ```sql
+    SELECT * FROM tbl_admin WHERE temp_password IS NULL;
+    ```
+
+13. **What query would update the role of a user (e.g., from `Admin` to `Super Admin`)?**  
+    ```sql
+    UPDATE tbl_admin SET user_role = 1 WHERE user_id = 17;
+    ```
+
+14. **How can you retrieve a list of all Super Admins?**  
+    ```sql
+    SELECT * FROM tbl_admin WHERE user_role = 1;
+    ```
+
+15. **How would you assign a temporary password to all users without one?**  
+    ```sql
+    UPDATE tbl_admin 
+    SET temp_password = 'temp123' 
+    WHERE temp_password IS NULL;
+    ```
+
+---
+
+### Enhancements
+
+16. **What enhancements would you suggest for the `tbl_admin` table?**  
+    - Add a `created_at` column to track when the user was added.  
+    - Include a `last_login` column to track the last login time.  
+    - Add a `status` column to mark accounts as active or inactive.  
+
+17. **How would you enforce email format validation?**  
+    Use a `CHECK` constraint or validate via application logic:  
+    ```sql
+    ALTER TABLE tbl_admin 
+    ADD CONSTRAINT email_format CHECK (email LIKE '%_@__%.__%');
+    ```
+
+18. **What steps would you take if a user forgets their password?**  
+    - Generate a `temp_password`.  
+    - Update the `temp_password` field in the table.  
+    - Notify the user via email with the temporary password.
+
+---
+
