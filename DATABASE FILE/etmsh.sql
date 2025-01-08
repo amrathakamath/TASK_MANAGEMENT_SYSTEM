@@ -185,3 +185,6 @@ ALTER TABLE task_info MODIFY COLUMN deadline DATETIME NOT NULL;
 UPDATE task_info SET deadline = NOW();  -- or set to a specific date
 SELECT * FROM task_info WHERE deadline IS NULL OR deadline = '0000-00-00 00:00:00';
 UPDATE task_info SET deadline = NOW() WHERE deadline IS NULL OR deadline = '0000-00-00 00:00:00';
+
+INSERT INTO attendance_info (atn_user_id, in_time, out_time, total_duration) 
+VALUES (1, '2023-01-01 09:00:00', '2023-01-01 17:00:00', '8:00:00');
