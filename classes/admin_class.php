@@ -13,7 +13,7 @@ class Admin_Class
 		$db_name='etmsh';
 
 		try{
-			$connection=new PDO("mysql:host={$host_name}; dbname={$db_name}", $user_name,  $password);
+			$connection=new PDO("mysql:host={$host_name};port=3307;dbname={$db_name}", $user_name,  $password);
 			$this->db = $connection; // connection established
 		} catch (PDOException $message ) {
 			echo $message->getMessage();
