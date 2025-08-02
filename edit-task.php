@@ -55,8 +55,7 @@ $unix_current_time = $currentDateTime->getTimestamp();
 			<div class="well">
 			<h3 class="text-center bg-primary" style="padding: 7px;">Edit Task </h3><br>
 
-<<<<<<< HEAD
-=======
+
 
                       <div class="row">
                         <div class="col-md-12">
@@ -86,7 +85,7 @@ $unix_current_time = $currentDateTime->getTimestamp();
 			                    </div>
 			                  </div>
 
->>>>>>> e79aae9 (fixed)
+
 					<div class="row">
 					<div class="col-md-12">
 						<form class="form-horizontal" role="form" action="" method="post" autocomplete="off">
